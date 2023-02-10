@@ -349,6 +349,11 @@
             "cli"
           ],
           "type": "string"
+        },
+        "vsflux.timeout": {
+          "default": 30,
+          "description": "The query timeout in seconds, default is 30",
+          "type": "integer"
         }
       }
     },

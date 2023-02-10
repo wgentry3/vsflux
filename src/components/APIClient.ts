@@ -5,6 +5,7 @@ import { BucketsAPI, OrgsAPI, TasksAPI, ScriptsAPI, FluxScriptInvocationAPI } fr
 import { IInstance } from '../types'
 
 const version = vscode.extensions.getExtension('influxdata.flux')?.packageJSON.version
+const defaultTimeout = 30 // Match the web UI
 
 /* APIClient encapsulates all the functionality needed to make connections to
    InfluxDB instances.
@@ -24,11 +25,18 @@ export class APIClient {
         }
     }
 
+    // Get the config. Don't cache this, otherwise we'd have to set up change
+    // event listeners.
+    get config() : vscode.WorkspaceConfiguration {
+        return vscode.workspace.getConfiguration('vsflux')
+    }
+
     private getInfluxDB() : InfluxDB {
+        const timeout = this.config.get<number>('timeout', defaultTimeout)
         return new InfluxDB({
             url: this.instance.hostNport,
             token: this.instance.token,
-            timeout: 30 * 1000, // Match the web UI
+            timeout: timeout * 1000, 
             transportOptions: this.transportOptions
         })
     }
